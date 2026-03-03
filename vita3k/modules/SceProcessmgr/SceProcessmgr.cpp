@@ -1,5 +1,5 @@
 // Vita3K emulator project
-// Copyright (C) 2025 Vita3K team
+// Copyright (C) 2026 Vita3K team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -101,7 +101,9 @@ EXPORT(int, sceKernelCDialogSetLeaseLimit) {
 
 EXPORT(int, sceKernelCallAbortHandler, uint32_t param1, uint32_t param2) {
     TRACY_FUNC(sceKernelCallAbortHandler, param1, param2);
-    return UNIMPLEMENTED();
+    LOG_DEBUG("param1 : {}, param 2 : {}", param1, param2);
+    return 0;
+    //return UNIMPLEMENTED();
 }
 
 EXPORT(int, sceKernelGetCurrentProcess) {
