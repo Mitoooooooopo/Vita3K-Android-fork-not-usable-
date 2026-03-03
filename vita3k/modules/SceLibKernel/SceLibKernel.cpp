@@ -1106,10 +1106,12 @@ EXPORT(int, sceKernelBacktraceSelf) {
     return UNIMPLEMENTED();
 }
 
-EXPORT(int, sceKernelCallModuleExit) {
-    TRACY_FUNC(sceKernelCallModuleExit);
-    
-    return 0;
+EXPORT(int, sceKernelCallModuleExit, char *path, int flags, SceKernelLMOption *option) {
+    TRACY_FUNC(sceKernelCallModuleExit,path, flags, option);
+    LOG_DEBUG("call _sceKernelLoadModule");
+    return CALL_EXPORT(_sceKernelLoadModule, path, flags, option);
+
+//    return SCE_KERNEL_OK;
     //return UNIMPLEMENTED();
 }
 
