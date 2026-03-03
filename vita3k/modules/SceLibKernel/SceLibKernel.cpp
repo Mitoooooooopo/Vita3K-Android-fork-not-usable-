@@ -1,5 +1,5 @@
 // Vita3K emulator project
-// Copyright (C) 2025 Vita3K team
+// Copyright (C) 2026 Vita3K team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -1110,8 +1110,8 @@ EXPORT(int, sceKernelBacktraceSelf) {
 
 EXPORT(int, sceKernelCallModuleExit) {
     TRACY_FUNC(sceKernelCallModuleExit);
-    LOG_ERROR("App crashed!");
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crashed", "Application crashed!", emuenv.window.get())
+    LOG_ERROR("App call exit!");
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crashed", "Application crashed!", emuenv.window.get());
     emuenv.load_exec = true;
     return 0;
     //return UNIMPLEMENTED();
