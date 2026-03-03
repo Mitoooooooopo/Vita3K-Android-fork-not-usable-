@@ -39,8 +39,6 @@
 #include <util/log.h>
 #include <util/tracy.h>
 
-#include <SDL_messagebox.h>
-
 #include <cmath>
 #include <cstdlib>
 
