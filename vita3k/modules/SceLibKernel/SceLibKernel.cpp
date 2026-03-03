@@ -1112,7 +1112,10 @@ EXPORT(int, sceKernelCallModuleExit) {
     TRACY_FUNC(sceKernelCallModuleExit);
     LOG_ERROR("App call exit!");
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crashed", "Application crashed!", emuenv.window.get());
+    emuenv.kernel.exit_delete_all_threads();
     emuenv.load_exec = true;
+    // make sure we are not stuck waiting for a gpu command
+    emuenv.renderer->should_display = true;
     return 0;
     //return UNIMPLEMENTED();
 }
