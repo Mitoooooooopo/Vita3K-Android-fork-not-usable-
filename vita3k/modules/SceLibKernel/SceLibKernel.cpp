@@ -39,6 +39,8 @@
 #include <util/log.h>
 #include <util/tracy.h>
 
+#include <SDL_messagebox.h>
+
 #include <cmath>
 #include <cstdlib>
 
@@ -1108,7 +1110,11 @@ EXPORT(int, sceKernelBacktraceSelf) {
 
 EXPORT(int, sceKernelCallModuleExit) {
     TRACY_FUNC(sceKernelCallModuleExit);
-    return UNIMPLEMENTED();
+    LOG_ERROR("App crashed!");
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Crashed", "Application crashed!", emuenv.window.get())
+    emuenv.load_exec = true;
+    return 0;
+    //return UNIMPLEMENTED();
 }
 
 EXPORT(int, sceKernelCallWithChangeStack) {
