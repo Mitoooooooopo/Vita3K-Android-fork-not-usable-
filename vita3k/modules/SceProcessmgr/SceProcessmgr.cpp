@@ -101,7 +101,7 @@ EXPORT(int, sceKernelCDialogSetLeaseLimit) {
 
 EXPORT(int, sceKernelCallAbortHandler, const char *param1, const char *param2) {
     TRACY_FUNC(sceKernelCallAbortHandler, param1, param2);
-    LOG_DEBUG("param1 : {}, param 2 : {}", param1.c_str(), param2.c_str());
+    LOG_DEBUG("param1 : {}, param 2 : {}", param1, param2);
     return 0;
     //return UNIMPLEMENTED();
 }
