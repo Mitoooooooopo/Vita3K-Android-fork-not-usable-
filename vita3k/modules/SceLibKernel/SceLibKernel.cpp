@@ -160,8 +160,17 @@ EXPORT(Ptr<void>, sceClibMemcpy, Ptr<void> dst, const void *src, SceSize len) {
     return dst;
 }
 
-EXPORT(int, sceClibMemcpyChk) {
-    TRACY_FUNC(sceClibMemcpyChk);
+EXPORT(Ptr<void>, sceClibMemcpyChk, Ptr<void> dst, const void *src, SceSize len) {
+    TRACY_FUNC(sceClibMemcpyChk, dst, src, len);
+    auto dstchk = dst.get(emuenv.mem);
+    if(dstchk != nullptr || src != nullptr && len > 0) {
+        LOG_DEBUG("do memcpy");
+        memcpy(dstchk, src, len);
+        return dstchk;
+    } else if (len == 0){
+        return dst;
+    }
+    
     return UNIMPLEMENTED();
 }
 
@@ -1106,7 +1115,7 @@ EXPORT(int, sceKernelBacktraceSelf) {
     return UNIMPLEMENTED();
 }
 
-EXPORT(int, sceKernelCallModuleExit, int a, int b, int c) {
+EXPORT(int, sceKernelCallModuleExit, const char *a, const char *b, const char *c) {
     TRACY_FUNC(sceKernelCallModuleExit);
     LOG_DEBUG("get value: a={}, b={}, c={}", a,b,c);
     return SCE_KERNEL_OK;
