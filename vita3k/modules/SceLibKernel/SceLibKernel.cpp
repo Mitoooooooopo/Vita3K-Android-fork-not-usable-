@@ -73,16 +73,18 @@ VAR_EXPORT(__stack_chk_guard) {
     return ptr.address();
 }
 
-EXPORT(int, __sce_aeabi_idiv0) {
+EXPORT(SceSize, __sce_aeabi_idiv0) {
     TRACY_FUNC(__sce_aeabi_idiv0);
     LOG_ERROR("Division by zero");
-    return UNIMPLEMENTED();
+    return 0;
+   // return UNIMPLEMENTED();
 }
 
-EXPORT(int, __sce_aeabi_ldiv0) {
+EXPORT(SceSize, __sce_aeabi_ldiv0) {
     TRACY_FUNC(__sce_aeabi_ldiv0);
     LOG_ERROR("Division by zero");
-    return UNIMPLEMENTED();
+    return 0;
+    // return UNIMPLEMENTED();
 }
 
 EXPORT(int, __stack_chk_fail) {
@@ -162,16 +164,14 @@ EXPORT(Ptr<void>, sceClibMemcpy, Ptr<void> dst, const void *src, SceSize len) {
 
 EXPORT(Ptr<void>, sceClibMemcpyChk, Ptr<void> dst, const void *src, SceSize len) {
     TRACY_FUNC(sceClibMemcpyChk, dst, src, len);
-    auto dstchk = dst.get(emuenv.mem);
-    if(dstchk != nullptr || src != nullptr && len > 0) {
-        LOG_DEBUG("do memcpy");
-        memcpy(dstchk, src, len);
-        return dstchk;
-    } else if (len == 0){
+    
+    if (len == 0) {
+        LOG_DEBUG("len is 0");
         return dst;
     }
-    
-    return UNIMPLEMENTED();
+    LOG_DEBUG("call sceClibMemcpy");
+    CALL_EXPORT(sceClibMemcpy, dst, src.get(emuenv.mem), len);
+    return dst;
 }
 
 EXPORT(Ptr<void>, sceClibMemcpy_safe, Ptr<void> dst, const Ptr<void> src, SceSize len) {
@@ -1117,7 +1117,7 @@ EXPORT(int, sceKernelBacktraceSelf) {
 
 EXPORT(int, sceKernelCallModuleExit, const char *a, const char *b, const char *c) {
     TRACY_FUNC(sceKernelCallModuleExit);
-    LOG_DEBUG("get value: a={}, b={}, c={}", a,b,c);
+    LOG_DEBUG("get value: a={}, b={}, c={}", a.c_str(),b.c_str(),c.c_str());
     return SCE_KERNEL_OK;
     //return UNIMPLEMENTED();
 }
