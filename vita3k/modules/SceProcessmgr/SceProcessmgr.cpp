@@ -177,7 +177,7 @@ EXPORT(int, sceKernelIsCDialogAvailable) {
     return UNIMPLEMENTED();
 }
 
-EXPORT(int, sceKernelIsGameBudget, int a, int b int c) {
+EXPORT(int, sceKernelIsGameBudget, int a, int b, int c) {
     TRACY_FUNC(sceKernelIsGameBudget);
     LOG_DEBUG("get value: a = {}, b = {}, c = {}", a,b,c);
     return UNIMPLEMENTED();
