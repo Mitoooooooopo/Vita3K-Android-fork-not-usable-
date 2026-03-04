@@ -162,7 +162,7 @@ EXPORT(Ptr<void>, sceClibMemcpy, Ptr<void> dst, const void *src, SceSize len) {
     return dst;
 }
 
-EXPORT(Ptr<void>, sceClibMemcpyChk, Ptr<void> dst, const void *src, SceSize len) {
+EXPORT(Ptr<void>, sceClibMemcpyChk, Ptr<void> dst, const Ptr<void> src, SceSize len) {
     TRACY_FUNC(sceClibMemcpyChk, dst, src, len);
     
     if (len == 0) {
@@ -170,7 +170,7 @@ EXPORT(Ptr<void>, sceClibMemcpyChk, Ptr<void> dst, const void *src, SceSize len)
         return dst;
     }
     LOG_DEBUG("call sceClibMemcpy");
-    CALL_EXPORT(sceClibMemcpy, dst.get(emuenv.mem), src, len);
+    CALL_EXPORT(sceClibMemcpy, dst, src.get(emuenv.mem), len);
     return dst;
 }
 
