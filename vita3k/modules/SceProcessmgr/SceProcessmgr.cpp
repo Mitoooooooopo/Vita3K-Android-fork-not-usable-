@@ -101,7 +101,7 @@ EXPORT(int, sceKernelCDialogSetLeaseLimit) {
 
 EXPORT(int, sceKernelCallAbortHandler, const char *param1, const char *param2) {
     TRACY_FUNC(sceKernelCallAbortHandler, param1, param2);
-    LOG_DEBUG("param1 : {}, param 2 : {}", param1, param2);
+    LOG_DEBUG("param1 : {}, param 2 : {}", param1.c_str(), param2.c_str());
     return 0;
     //return UNIMPLEMENTED();
 }
@@ -177,8 +177,9 @@ EXPORT(int, sceKernelIsCDialogAvailable) {
     return UNIMPLEMENTED();
 }
 
-EXPORT(int, sceKernelIsGameBudget) {
+EXPORT(int, sceKernelIsGameBudget, int a, int b int c) {
     TRACY_FUNC(sceKernelIsGameBudget);
+    LOG_DEBUG("get value: a = {}, b = {}, c = {}", a,b,c);
     return UNIMPLEMENTED();
 }
 
