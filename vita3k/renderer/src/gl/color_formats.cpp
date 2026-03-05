@@ -99,7 +99,6 @@ static const GLint *translate_swizzle(SceGxmColorSwizzle1Mode mode) {
 
 // Translate popular color base format that can be bit-casted for purposes
 GLenum translate_internal_format(SceGxmColorBaseFormat base_format) {
-GLenum translate_internal_format(SceGxmColorBaseFormat base_format) {
     switch (base_format) {
     case SCE_GXM_COLOR_BASE_FORMAT_U8U8U8:
 #ifdef ANDROID
@@ -156,7 +155,7 @@ GLenum translate_format(SceGxmColorBaseFormat base_format) {
     case SCE_GXM_COLOR_BASE_FORMAT_U8U8U8U8:
         return GL_RGBA;
 
-    case SCE_GXM_COLOR_BASE_FORMAT_S8S8S8S8:
+    case SCE_GXM_COLOR_BASE_FORMAT_S8S8S8S8: 
         return GL_RGBA;
 
     case SCE_GXM_COLOR_BASE_FORMAT_U2U10U10U10:
@@ -168,9 +167,11 @@ GLenum translate_format(SceGxmColorBaseFormat base_format) {
 
     case SCE_GXM_COLOR_BASE_FORMAT_F11F11F10:
     case SCE_GXM_COLOR_BASE_FORMAT_U8U8U8:
-        return GL_RGB;
-
-    case SCE_GXM_COLOR_BASE_FORMAT_F16:
+    #ifdef ANDROID
+        return GL_RGBA; 
+    #else 
+        return GL_RGB; 
+    #endGLenum  case SCE_GXM_COLOR_BASE_FORMAT_F16:
     case SCE_GXM_COLOR_BASE_FORMAT_U8:
         return GL_RED;
 
@@ -187,7 +188,11 @@ GLenum translate_type(SceGxmColorBaseFormat base_format) {
         return GL_UNSIGNED_BYTE;
 
     case SCE_GXM_COLOR_BASE_FORMAT_S8S8S8S8:
+    #ifdef ANDROID
+        return GL_UNSIGNED_BYTE;
+    #else
         return GL_BYTE;
+    #endif
 
     case SCE_GXM_COLOR_BASE_FORMAT_F16F16F16F16:
         return GL_HALF_FLOAT;
