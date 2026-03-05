@@ -155,7 +155,7 @@ GLenum translate_format(SceGxmColorBaseFormat base_format) {
     case SCE_GXM_COLOR_BASE_FORMAT_U8U8U8U8:
         return GL_RGBA;
 
-    case SCE_GXM_COLOR_BASE_FORMAT_S8S8S8S8: 
+    case SCE_GXM_COLOR_BASE_FORMAT_S8S8S8S8:
         return GL_RGBA;
 
     case SCE_GXM_COLOR_BASE_FORMAT_U2U10U10U10:
@@ -166,12 +166,16 @@ GLenum translate_format(SceGxmColorBaseFormat base_format) {
         return GL_RG;
 
     case SCE_GXM_COLOR_BASE_FORMAT_F11F11F10:
+        return GL_RGB;
+
     case SCE_GXM_COLOR_BASE_FORMAT_U8U8U8:
-    #ifdef ANDROID
-        return GL_RGBA; 
-    #else 
-        return GL_RGB; 
-    #endGLenum  case SCE_GXM_COLOR_BASE_FORMAT_F16:
+#ifdef ANDROID
+        return GL_RGBA;
+#else
+        return GL_RGB;
+#endif
+
+    case SCE_GXM_COLOR_BASE_FORMAT_F16:
     case SCE_GXM_COLOR_BASE_FORMAT_U8:
         return GL_RED;
 
