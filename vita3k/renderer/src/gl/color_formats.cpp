@@ -99,27 +99,42 @@ static const GLint *translate_swizzle(SceGxmColorSwizzle1Mode mode) {
 
 // Translate popular color base format that can be bit-casted for purposes
 GLenum translate_internal_format(SceGxmColorBaseFormat base_format) {
+GLenum translate_internal_format(SceGxmColorBaseFormat base_format) {
     switch (base_format) {
     case SCE_GXM_COLOR_BASE_FORMAT_U8U8U8:
+#ifdef ANDROID
+        // GL_RGB8 is not guaranteed color-renderable on ES drivers
+        // PowerVR GE8320 requires RGBA8 fallback
+        return GL_RGBA8;
+#else
         return GL_RGB8;
-        
+#endif
+
     case SCE_GXM_COLOR_BASE_FORMAT_U8U8U8U8:
         return GL_RGBA8;
 
     case SCE_GXM_COLOR_BASE_FORMAT_S8S8S8S8:
+#ifdef ANDROID
+        // GL_RGBA8_SNORM is texture-only per ES 3.2 spec, not color-renderable
+        return GL_RGBA8;
+#else
         return GL_RGBA8_SNORM;
+#endif
 
     case SCE_GXM_COLOR_BASE_FORMAT_F16F16F16F16:
-        return GL_RGBA16F;
+        return GL_RGBA16F; // fine, EXT_color_buffer_float supported
 
     case SCE_GXM_COLOR_BASE_FORMAT_U2U10U10U10:
-        return GL_RGB10_A2;
+        return GL_RGB10_A2; // fine, required renderable in ES 3.0+
 
     case SCE_GXM_COLOR_BASE_FORMAT_F11F11F10:
-        return GL_R11F_G11F_B10F;
+        return GL_R11F_G11F_B10F; // fine with EXT_color_buffer_float
 
     case SCE_GXM_COLOR_BASE_FORMAT_F32F32:
         return GL_RG32F;
+
+    case SCE_GXM_COLOR_BASE_FORMAT_F32:
+        return GL_R32F;
 
     case SCE_GXM_COLOR_BASE_FORMAT_F16:
         return GL_R16F;
