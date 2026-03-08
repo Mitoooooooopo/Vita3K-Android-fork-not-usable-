@@ -1,21 +1,41 @@
 # THIS IS NOT MAIN REPO VITA3K!
+# This Is Not a REPO Of Original Vita3k ZX by ikhoey 
 
-# Minimum system requirement
-- Vulkan 1.1 (All SoC) / OpenGLES 3.2 (Adreno only).
-- Android 9, 64 bit CPU for All SoC.
-- At least 4GB of RAM
-- 6GB Free storage
+# Warning: This Fork isn't a performance enhancing or a better version of ZX  Any changes in This Fork won't benefit you If Your device have Vulkan Support As All primary changes here Will be aimed at improving support For the devices That use Powervr GPU, And openGl Es support on Non Adreno Devices so I recommended You To keep using the original Vita3k or Zx If your device already handle Vulkan And can run games on Vita3k
 
-# Known Issue
-- Adreno GPU Driver only supported v11.5 (old sdl2 version) and [v12_build10](https://github.com/ikhoeyZX/Vita3K-Android/releases/tag/v12_build10) or newer (new sdl2 version)
-- Some Adreno devices have issue with Custom driver in Android 15 or newer
-- since i don't have Adreno or PowerVR gpu phone, newer bug maybe exist in that gpu
-- Vulkan 1.0 can run but it's too buggy, use OpenGL(ES) instead (Adreno only, other SoC didn't support openGLES in this emu for now, because most mobile devices other than Snapdragon doesn't support Vertex Shader SSBO) 
-- PowerVR GPU now supported in [v12_build14](https://github.com/ikhoeyZX/Vita3K-Android/releases/tag/v12_build14) but because it's have limited vulkan feature, not all games can run well.
+# Zx-ESVR fork
+This fork Now enables openGl Es to run on powervr Since powervr have poor Vulkan Compatibility or straight up doesn't support Vulkan
+
+# issues
+This is still on development So Not All Games You Try will work with openGl Es especially combined With powervr on such cases feel free to open a issue
+
+# Minimum system Requirements
+
+- openGLES 3.2 support
+- 3/4GB RAM, 6GB+ recommend
+- Android 9 And 64 bit GPU
+
+
+
+# Games Tested(Tested on Oppo A12 3GB Ram Mediatek Helio P35 Powervr RougeGE 8320 A entry level device)
+
+Guacamelee:
+![Screenshot_2026-03-08-10-18-29-60](https://github.com/user-attachments/assets/bdc53903-1321-4b41-90d3-725c84bf1e69)
+ (FPS: playble)
+Terraria:
+![Screenshot_2026-03-08-10-59-47-36](https://github.com/user-attachments/assets/0dc3c378-0349-4544-8221-4c96db3d4346)
+(FPS: playble)
+
+# Game's That are working partially
+Angry Birds Trilogy
+(playble But heavy graphic Bug)
+
+# Games That Are Not Working by Far
+Dragon Build Quest
+Limbo
 
 # Vita3K
-
-![C/C++ CI](https://github.com/Vita3K/Vita3K/workflows/C/C++%20CI/badge.svg)
+[C/C++ CI](https://github.com/Vita3K/Vita3K/workflows/C/C++%20CI/badge.svg)
 [![Vita3K discord server](https://img.shields.io/discord/408916678911459329?color=5865F2&label=Vita3K%20&logo=discord&logoColor=white)](https://discord.gg/6aGwQzh)
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/vita3k)
 
@@ -24,12 +44,12 @@
 Vita3K is an experimental PlayStation Vita emulator for Windows, Linux, macOS and Android.
 
 * [Website](https://vita3k.org/) (information for users)
-* [Wiki](https://github.com/Vita3K/Vita3K/wiki) (information for developers)
+* [Wiki](https://github.com/Vita3K/Vita3K/wiki) (information for onTested)
 * [Discord server](https://discord.gg/MaWhJVH) (recommended)
 
 ## Android
 
-This repository contains the source code for the Android version and different from main repository.
+This repository contains the source code for Tested Android version and different from main repository.
 Pull requests are welcomed and accepted if they target some Android-specific part of the code. Otherwise please do your pull requests directly to the [main repository](https://github.com/Vita3K/Vita3K). Please be aware that this repository is not same as vita3k main repo since this repo still using SDL2 while Vita3k main repo using SDL3
 
 Build instruction for the Android version are specified in [`building.md`](./building.md).
@@ -98,6 +118,7 @@ Thank you to the supporters and to all those who support us on our [ko-fi](https
 The purpose of this emulator is not to enable illegal activity. You can dump games from a Vita by using [NoNpDrm](https://github.com/TheOfficialFloW/NoNpDrm) or [FAGDec](https://github.com/CelesteBlue-dev/PSVita-RE-tools/tree/master/FAGDec/build). You can get homebrew programs from [VitaDB](https://vitadb.rinnegatamante.it/).
 
 PlayStation, PlayStation Vita and PlayStation Network are all registered trademarks of Sony Interactive Entertainment Inc. This emulator is not related to or endorsed by Sony, or derived from confidential materials belonging to Sony.
+
 
 
 
