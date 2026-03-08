@@ -22,6 +22,7 @@ This is still on development So Not All Games You Try will work with openGl Es e
 Guacamelee:
 ![Screenshot_2026-03-08-10-18-29-60](https://github.com/user-attachments/assets/bdc53903-1321-4b41-90d3-725c84bf1e69)
  (FPS: playble)
+ 
 Terraria:
 ![Screenshot_2026-03-08-10-59-47-36](https://github.com/user-attachments/assets/0dc3c378-0349-4544-8221-4c96db3d4346)
 (FPS: playble)
@@ -32,6 +33,7 @@ Angry Birds Trilogy
 
 # Games That Are Not Working by Far
 Dragon Build Quest
+
 Limbo
 
 # Vita3K
@@ -118,6 +120,7 @@ Thank you to the supporters and to all those who support us on our [ko-fi](https
 The purpose of this emulator is not to enable illegal activity. You can dump games from a Vita by using [NoNpDrm](https://github.com/TheOfficialFloW/NoNpDrm) or [FAGDec](https://github.com/CelesteBlue-dev/PSVita-RE-tools/tree/master/FAGDec/build). You can get homebrew programs from [VitaDB](https://vitadb.rinnegatamante.it/).
 
 PlayStation, PlayStation Vita and PlayStation Network are all registered trademarks of Sony Interactive Entertainment Inc. This emulator is not related to or endorsed by Sony, or derived from confidential materials belonging to Sony.
+
 
 
 
