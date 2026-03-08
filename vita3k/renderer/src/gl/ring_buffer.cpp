@@ -22,6 +22,17 @@
 #include <util/align.h>
 #include <util/log.h>
 
+#ifdef ANDROID
+#include <EGL/egl.h>
+
+#ifndef GL_MAP_PERSISTENT_BIT_EXT
+#define GL_MAP_PERSISTENT_BIT_EXT  0x0040
+#define GL_MAP_COHERENT_BIT_EXT    0x0080
+#endif
+
+static void (*s_glBufferStorageEXT)(GLenum, GLsizeiptr, const void*, GLbitfield) = nullptr;
+#endif
+
 namespace renderer::gl {
 
 RingBuffer::RingBuffer(GLenum purpose, const std::size_t capacity)
@@ -42,15 +53,33 @@ RingBuffer::~RingBuffer() {
 void RingBuffer::create_and_map() {
     glBindBuffer(purpose_, buffer_[0]);
 #ifdef ANDROID
-    glBufferData(purpose_, capacity_, nullptr, GL_DYNAMIC_DRAW);
-    base_ = static_cast<std::uint8_t *>(glMapBufferRange(purpose_, 0, capacity_,
-        GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
+    // PowerVR GE8320: GL_EXT_buffer_storage exists but only via EXT entry point
+    if (!s_glBufferStorageEXT) {
+        s_glBufferStorageEXT = (void(*)(GLenum, GLsizeiptr, const void*, GLbitfield))
+            eglGetProcAddress("glBufferStorageEXT");
+    }
+
+    if (s_glBufferStorageEXT) {
+        s_glBufferStorageEXT(purpose_, capacity_, nullptr,
+            GL_MAP_WRITE_BIT |
+            GL_MAP_PERSISTENT_BIT_EXT |
+            GL_MAP_COHERENT_BIT_EXT);
+        base_ = static_cast<std::uint8_t *>(glMapBufferRange(purpose_, 0, capacity_,
+            GL_MAP_WRITE_BIT |
+            GL_MAP_PERSISTENT_BIT_EXT |
+            GL_MAP_COHERENT_BIT_EXT));
+    } else {
+        LOG_WARN("glBufferStorageEXT not found, using glBufferData fallback");
+        glBufferData(purpose_, capacity_, nullptr, GL_DYNAMIC_DRAW);
+        base_ = static_cast<std::uint8_t *>(glMapBufferRange(purpose_, 0, capacity_,
+            GL_MAP_WRITE_BIT |
+            GL_MAP_INVALIDATE_BUFFER_BIT));
+    }
 #else
     glBufferStorage(purpose_, capacity_, nullptr,
         GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
     base_ = static_cast<std::uint8_t *>(glMapBufferRange(purpose_, 0, capacity_,
-        GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT |
-        GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT));
+        GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT));
 #endif
 
     if (!base_) {
