@@ -53,7 +53,7 @@ if(ANDROID)
    if (ARCHITECTURE STREQUAL "arm")
 	target_link_libraries(renderer PRIVATE android)
    else()
-        target_link_libraries(renderer PRIVATE android adrenotools)
+        target_link_libraries(renderer PRIVATE android adrenotools EGL)
    endif()
 endif()
 
