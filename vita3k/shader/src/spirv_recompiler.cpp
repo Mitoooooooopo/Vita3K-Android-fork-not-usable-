@@ -2052,7 +2052,7 @@ static std::string convert_spirv_to_glsl(const std::string &shader_name, SpirvCo
     // Compile to GLSL, ready to give to GL driver.
     std::string source = glsl.compile(); 
     
-ifdef ANDROID
+#ifdef ANDROID
     if (source.find("GL_EXT_texture_query_lod") != std::string::npos) {
         auto ext_pos = source.find("#extension GL_EXT_texture_query_lod");
         if (ext_pos != std::string::npos) {
