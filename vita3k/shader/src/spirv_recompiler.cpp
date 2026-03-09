@@ -2086,9 +2086,22 @@ highp vec2 textureQueryLOD(sampler2DArray s, highp vec3 uv) {
     highp float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
     return vec2(lod, lod);
 }
-)"; 
-if (pos != 0)
-    source.insert(pos, polyfill);
+)";
+        size_t pos = 0;
+        size_t search = 0;
+        while ((search = source.find('\n', pos)) != std::string::npos) {
+            std::string line = source.substr(pos, search - pos);
+            if (line.find("#version") == std::string::npos &&
+                line.find("#extension") == std::string::npos &&
+                line.find("precision") == std::string::npos &&
+                line.find("//") == std::string::npos &&
+                !line.empty()) {
+                break;
+            }
+            pos = search + 1;
+        }
+        if (pos != 0)
+            source.insert(pos, polyfill);
     }
 #endif
 
