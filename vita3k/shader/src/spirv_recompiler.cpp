@@ -2063,10 +2063,6 @@ static std::string convert_spirv_to_glsl(const std::string &shader_name, SpirvCo
 
         // Inject polyfill after #version line
         const std::string polyfill = R"(
-precision highp float;
-precision highp sampler2D;
-precision highp samplerCube;
-precision highp sampler2DArray;
 highp vec2 textureQueryLOD(sampler2D s, highp vec2 uv) {
     highp vec2 sz = vec2(textureSize(s, 0));
     highp vec2 dx = dFdx(uv * sz.x);
