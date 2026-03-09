@@ -2063,29 +2063,43 @@ static std::string convert_spirv_to_glsl(const std::string &shader_name, SpirvCo
 
         // Inject polyfill after #version line
         const std::string polyfill = R"(
-highp vec2 textureQueryLOD(sampler2D s, highp vec2 uv) {
-    highp vec2 sz = vec2(textureSize(s, 0));
-    highp vec2 dx = dFdx(uv * sz.x);
-    highp vec2 dy = dFdy(uv * sz.y);
-    highp float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
+vec2 textureQueryLOD(sampler2D s, vec2 uv) {
+    vec2 sz = vec2(textureSize(s, 0));
+    vec2 dx = dFdx(uv * sz.x);
+    vec2 dy = dFdy(uv * sz.y);
+    float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
     return vec2(lod, lod);
 }
-highp vec2 textureQueryLOD(samplerCube s, highp vec3 uv) {
-    highp vec3 dx = dFdx(uv);
-    highp vec3 dy = dFdy(uv);
-    highp float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
+vec2 textureQueryLOD(samplerCube s, vec3 uv) {
+    vec3 dx = dFdx(uv);
+    vec3 dy = dFdy(uv);
+    float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
     return vec2(lod, lod);
 }
-highp vec2 textureQueryLOD(sampler2DArray s, highp vec3 uv) {
-    highp vec2 dx = dFdx(uv.xy);
-    highp vec2 dy = dFdy(uv.xy);
-    highp float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
+vec2 textureQueryLOD(sampler2DArray s, vec3 uv) {
+    vec2 dx = dFdx(uv.xy);
+    vec2 dy = dFdy(uv.xy);
+    float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
     return vec2(lod, lod);
 }
 )";
-        size_t pos = source.find('\n');
-        if (pos != std::string::npos)
-            source.insert(pos + 1, polyfill);
+
+// Find insertion point: after #version, #extension, and precision lines
+size_t pos = 0;
+size_t search = 0;
+while ((search = source.find('\n', pos)) != std::string::npos) {
+    std::string line = source.substr(pos, search - pos);
+    if (line.find("#version") == std::string::npos &&
+        line.find("#extension") == std::string::npos &&
+        line.find("precision") == std::string::npos &&
+        !line.empty() &&
+        line.find("//") == std::string::npos) {
+        break;
+    }
+    pos = search + 1;
+}
+if (pos != 0)
+    source.insert(pos, polyfill);
     }
 #endif
 
