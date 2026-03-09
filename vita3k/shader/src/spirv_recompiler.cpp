@@ -2050,7 +2050,45 @@ static std::string convert_spirv_to_glsl(const std::string &shader_name, SpirvCo
         glsl.require_extension("GL_ARB_fragment_shader_interlock");
     }
     // Compile to GLSL, ready to give to GL driver.
-    std::string source = glsl.compile();
+    std::string source = glsl.compile(); 
+    
+ifdef ANDROID
+    if (source.find("GL_EXT_texture_query_lod") != std::string::npos) {
+        auto ext_pos = source.find("#extension GL_EXT_texture_query_lod");
+        if (ext_pos != std::string::npos) {
+            auto line_end = source.find('\n', ext_pos);
+            if (line_end != std::string::npos)
+                source.erase(ext_pos, line_end - ext_pos + 1);
+        }
+
+        // Inject polyfill after #version line
+        const std::string polyfill = R"(
+vec2 textureQueryLod(sampler2D s, vec2 uv) {
+    vec2 sz = vec2(textureSize(s, 0));
+    vec2 dx = dFdx(uv * sz.x);
+    vec2 dy = dFdy(uv * sz.y);
+    float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
+    return vec2(lod, lod);
+}
+vec2 textureQueryLod(samplerCube s, vec3 uv) {
+    vec3 dx = dFdx(uv);
+    vec3 dy = dFdy(uv);
+    float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
+    return vec2(lod, lod);
+}
+vec2 textureQueryLod(sampler2DArray s, vec3 uv) {
+    vec2 dx = dFdx(uv.xy);
+    vec2 dy = dFdy(uv.xy);
+    float lod = max(0.0, 0.5 * log2(max(dot(dx,dx), dot(dy,dy))));
+    return vec2(lod, lod);
+}
+)";
+        size_t pos = source.find('\n');
+        if (pos != std::string::npos)
+            source.insert(pos + 1, polyfill);
+    }
+#endif
+
     return source;
 }
 
