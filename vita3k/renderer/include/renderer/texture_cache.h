@@ -134,6 +134,7 @@ public:
     
     // powerVR only
     bool support_pvrt = false;
+    bool support_pvrtc = false;
     
     bool init(const bool hashless_texture_cache, const fs::path &texture_folder, const std::string_view game_id, const size_t sampler_cache_size = 0);
     void set_replacement_state(bool import_textures, bool export_textures, bool export_as_png);
