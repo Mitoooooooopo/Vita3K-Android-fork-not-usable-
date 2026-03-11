@@ -41,7 +41,6 @@
 #include <functional>
 #include <list>
 #include <map>
-#include <set>  
 #include <sstream>
 #include <utility>
 #include <vector>
@@ -409,7 +408,7 @@ static void create_fragment_inputs(spv::Builder &b, SpirvShaderParameters &param
     translation_state.interfaces.push_back(current_coord);
     translation_state.frag_coord_id = current_coord;
 
-    std::set<uint32_t> declared_pa_locations;
+    std::map<uint32_t, spv::Id> declared_pa_locations;
     // It may actually be total fragments input
     for (size_t i = 0; i < vertex_varyings_ptr->varyings_count; i++, descriptor++) {
         // 4 bit flag indicates a PA!
@@ -473,26 +472,18 @@ if (input_id == 0xD000) {
 } else {
     if (!declared_pa_locations.count(pa_loc)) {
         // First time seeing this location — declare normally
-        declared_pa_locations.insert(pa_loc);
         pa_iter_var = b.createVariable(precision, spv::StorageClassInput,
             pa_iter_type, pa_name.c_str());
         b.addDecoration(pa_iter_var, spv::DecorationLocation, pa_loc);
         translation_state.interfaces.push_back(pa_iter_var);
+        declared_pa_locations[pa_loc] = pa_iter_var; // store spv::Id
     } else {
-        // Location conflict — find next free location and redeclare
-        uint32_t free_loc = pa_loc + 1;
-        while (declared_pa_locations.count(free_loc)) {
-            free_loc++;
-        }
-        declared_pa_locations.insert(free_loc);
-        pa_iter_var = b.createVariable(precision, spv::StorageClassInput,
-            pa_iter_type, pa_name.c_str());
-        b.addDecoration(pa_iter_var, spv::DecorationLocation, free_loc);
-        translation_state.interfaces.push_back(pa_iter_var);
+        // Duplicate location — reuse exact same spv::Id
+        // No new variable, no new name, no spirv_cross rename
+        pa_iter_var = declared_pa_locations[pa_loc];
     }
 }
 
-// var_to_regs always runs for all paths
 translation_state.var_to_regs.push_back(
     { pa_iter_var,
         true,
