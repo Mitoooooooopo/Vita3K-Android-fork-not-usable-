@@ -137,7 +137,7 @@ void GLTextureCache::configure_texture(const SceGxmTexture &gxm_texture) {
 
     uint32_t mip_index = 0;
 
-    bool compressed = gxm::is_bcn_format(base_fmt);
+    bool compressed = gxm::is_bcn_format(base_fmt) || gxm::is_pvrt_format(base_fmtif
 
     // GXM's cube map index is same as OpenGL: right, left, top, bottom, front, back
     GLenum upload_type = GL_TEXTURE_2D;
@@ -151,12 +151,15 @@ void GLTextureCache::configure_texture(const SceGxmTexture &gxm_texture) {
     }
 
     while (face_iterated < face_total_count && width && height) {
-        if (compressed && support_dxt) {
-            size_t compressed_size = renderer::texture::get_compressed_size(base_fmt, width, height);
-            glCompressedTexImage2D(upload_type, mip_index, internal_format, width, height, 0, static_cast<GLsizei>(compressed_size), nullptr);
-        } else {
-            glTexImage2D(upload_type, mip_index, internal_format, width, height, 0, format, type, nullptr);
-        }
+        if (gxm::is_pvrt_format(base_fmt) && support_pvrtc) {
+                    size_t compressed_size = renderer::texture::get_compressed_size(base_fmt, width, height);
+                    glCompressedTexImage2D(upload_type, mip_index, internal_format, width, height, 0, static_cast<GLsizei>(compressed_size), nullptr);
+                } else if (compressed && support_dxt) {
+                    size_t compressed_size = renderer::texture::get_compressed_size(base_fmt, width, height);
+                    glCompressedTexImage2D(upload_type, mip_index, internal_format, width, height, 0, static_cast<GLsizei>(compressed_size), nullptr);
+                } else {
+                    glTexImage2D(upload_type, mip_index, internal_format, width, height, 0, format, type, nullptr);
+                }
 
         mip_index++;
         width /= 2;
