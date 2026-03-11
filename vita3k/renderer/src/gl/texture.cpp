@@ -61,15 +61,12 @@ bool GLTextureCache::init(const bool hashless_texture_cache, const fs::path &tex
     LOG_TRACE("Total GL_NUM_EXTENSIONS: {}", total_extensions);
     for (int i = 0; i < total_extensions; i++) {
         auto ext_name = reinterpret_cast<const char *>(glGetStringi(GL_EXTENSIONS, i));
-        if (strcmp(ext_name, "GL_EXT_texture_compression_s3tc") == 0) {
+        if (strcmp(ext_name, "GL_EXT_texture_compression_s3tc") == 0)
             support_dxt = true;
-            break;
-        }
-
-        if (strcmp(ext_name, "GL_KHR_texture_compression_astc_ldr") == 0) {
+        if (strcmp(ext_name, "GL_KHR_texture_compression_astc_ldr") == 0)
             support_astc = true;
-            break;
-        }
+        if (strcmp(ext_name, "GL_IMG_texture_compression_pvrtc") == 0)
+            support_pvrtc = true;
     }
 
     return textures.init(glGenTextures, glDeleteTextures);
@@ -87,7 +84,7 @@ static GLenum bcn_to_rgba8(const SceGxmTextureBaseFormat format) {
     case SCE_GXM_TEXTURE_BASE_FORMAT_SBC4:
         return GL_R8_SNORM;
     case SCE_GXM_TEXTURE_BASE_FORMAT_UBC5:
-        return GL_RG8;
+        return autoG8;
     case SCE_GXM_TEXTURE_BASE_FORMAT_SBC5:
         return GL_RG8_SNORM;
     default:
