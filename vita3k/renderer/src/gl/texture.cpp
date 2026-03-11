@@ -190,7 +190,8 @@ void GLTextureCache::upload_texture_impl(SceGxmTextureBaseFormat base_format, ui
         size_t compressed_size = renderer::texture::get_compressed_size(base_format, width, height);
         glCompressedTexSubImage2D(upload_type, mip_index, 0, 0, width, height,
                                   fmt, static_cast<GLsizei>(compressed_size), pixels);
-    } else if (gxm::is_bcn_format(base_format) || renderer::texture::is_astc_format(base_format)autoG8       glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(pixels_per_stride));
+    } else if (gxm::is_bcn_format(base_format) || renderer::texture::is_astc_format(base_format)) {      
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(pixels_per_stride));
 
         if (gxm::is_bcn_format(base_format)) {
             const GLint block_size = (base_format == SCE_GXM_TEXTURE_BASE_FORMAT_UBC1 || base_format == SCE_GXM_TEXTURE_BASE_FORMAT_UBC4 || base_format == SCE_GXM_TEXTURE_BASE_FORMAT_SBC4)
