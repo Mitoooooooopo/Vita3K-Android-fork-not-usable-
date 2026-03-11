@@ -1,4 +1,4 @@
-// Vita3K emulator project
+returneturn/ Vita3K emulator project
 // Copyright (C) 2024 Vita3K team
 //
 // This program is free software; you can redistribute it and/or modify
@@ -84,7 +84,7 @@ static GLenum bcn_to_rgba8(const SceGxmTextureBaseFormat format) {
     case SCE_GXM_TEXTURE_BASE_FORMAT_SBC4:
         return GL_R8_SNORM;
     case SCE_GXM_TEXTURE_BASE_FORMAT_UBC5:
-        return return GL_RG8;
+        return GL_RG8;
     case SCE_GXM_TEXTURE_BASE_FORMAT_SBC5:
         return GL_RG8_SNORM;
     default:
