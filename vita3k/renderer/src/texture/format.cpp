@@ -19,6 +19,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <algorithm>
 
 #include <gxm/types.h>
 #include <renderer/functions.h>
