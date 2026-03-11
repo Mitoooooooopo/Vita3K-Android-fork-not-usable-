@@ -413,7 +413,14 @@ uint32_t get_compressed_size(SceGxmTextureBaseFormat base_format, uint32_t width
 
 #include "astc_formats.inc"
 #undef ASTC_FMT
-
+case SCE_GXM_TEXTURE_BASE_FORMAT_PVRT2BPP:
+    return (std::max(width, 16U) * std::max(height, 8U) * 2 + 7) / 8;
+case SCE_GXM_TEXTURE_BASE_FORMAT_PVRT4BPP:
+    return (std::max(width, 8U) * std::max(height, 8U) * 4 + 7) / 8;
+case SCE_GXM_TEXTURE_BASE_FORMAT_PVRTII2BPP:
+    return (std::max(width, 16U) * std::max(height, 8U) * 2 + 7) / 8;
+case SCE_GXM_TEXTURE_BASE_FORMAT_PVRTII4BPP:
+    return (std::max(width, 8U) * std::max(height, 8U) * 4 + 7) / 8;
     default:
         LOG_ERROR("Invalid block compressed texture format: {}", fmt::underlying(base_format));
         return 0;
