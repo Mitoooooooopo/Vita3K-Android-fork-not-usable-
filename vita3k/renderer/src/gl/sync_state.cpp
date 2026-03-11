@@ -385,7 +385,7 @@ void sync_texture(GLState &state, GLContext &context, MemState &mem, std::size_t
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
 
-        if (base_format != SCE_GXM_TEXTURE_BASE_FORMAT_X8U24) {
+        if (base_format != SCE_GXM_TEXTURE_BASE_FORMAT_X8U24 && !only_nearest) {
             const GLint *swizzle = texture::translate_swizzle(format);
 
             if (swizzle) {
