@@ -459,7 +459,10 @@ static void create_fragment_inputs(spv::Builder &b, SpirvShaderParameters &param
             spv::Id pa_iter_var = spv::NoResult;
 
             // TODO how about centroid?
-            if (input_id == 0xD000) {
+spv::Decoration precision = get_data_type_size(pa_dtype) < 4
+    ? spv::DecorationRelaxedPrecision : spv::NoPrecision;
+
+if (input_id == 0xD000) {
     pa_iter_var = b.createLoad(translation_state.frag_coord_id, spv::NoPrecision);
 
     spv::Id res_multiplier = utils::create_access_chain(b, spv::StorageClassUniform, translation_state.render_info_id, { b.makeIntConstant(FRAG_UNIFORM_res_multiplier) });
@@ -468,29 +471,28 @@ static void create_fragment_inputs(spv::Builder &b, SpirvShaderParameters &param
     res_multiplier = b.createCompositeConstruct(v4, { res_multiplier, res_multiplier, one, one });
     pa_iter_var = b.createBinOp(spv::OpFDiv, v4, pa_iter_var, res_multiplier);
 } else {
-    spv::Decoration precision = get_data_type_size(pa_dtype) < 4
-        ? spv::DecorationRelaxedPrecision : spv::NoPrecision;
-
-    // --- PowerVR fix: skip duplicate location declaration only ---
     if (!declared_pa_locations.count(pa_loc)) {
+        // First time seeing this location — declare normally
         declared_pa_locations.insert(pa_loc);
         pa_iter_var = b.createVariable(precision, spv::StorageClassInput,
             pa_iter_type, pa_name.c_str());
         b.addDecoration(pa_iter_var, spv::DecorationLocation, pa_loc);
         translation_state.interfaces.push_back(pa_iter_var);
     } else {
-        // reuse the existing variable — find it by location
-        for (auto &vtr : translation_state.var_to_regs) {
-            if (vtr.pa && vtr.offset == pa_offset) {
-                pa_iter_var = vtr.var;
-                break;
-            }
+        // Location conflict — find next free location and redeclare
+        uint32_t free_loc = pa_loc + 1;
+        while (declared_pa_locations.count(free_loc)) {
+            free_loc++;
         }
+        declared_pa_locations.insert(free_loc);
+        pa_iter_var = b.createVariable(precision, spv::StorageClassInput,
+            pa_iter_type, pa_name.c_str());
+        b.addDecoration(pa_iter_var, spv::DecorationLocation, free_loc);
+        translation_state.interfaces.push_back(pa_iter_var);
     }
-    // -----------------------------------------------------------
 }
 
-// var_to_regs.push_back still runs normally for both paths
+// var_to_regs always runs for all paths
 translation_state.var_to_regs.push_back(
     { pa_iter_var,
         true,
