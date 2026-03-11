@@ -408,6 +408,7 @@ static void create_fragment_inputs(spv::Builder &b, SpirvShaderParameters &param
     translation_state.interfaces.push_back(current_coord);
     translation_state.frag_coord_id = current_coord;
 
+    std::set<uint32_t> declared_pa_locations;
     // It may actually be total fragments input
     for (size_t i = 0; i < vertex_varyings_ptr->varyings_count; i++, descriptor++) {
         // 4 bit flag indicates a PA!
@@ -458,31 +459,44 @@ static void create_fragment_inputs(spv::Builder &b, SpirvShaderParameters &param
 
             // TODO how about centroid?
             if (input_id == 0xD000) {
-                pa_iter_var = b.createLoad(translation_state.frag_coord_id, spv::NoPrecision);
+    pa_iter_var = b.createLoad(translation_state.frag_coord_id, spv::NoPrecision);
 
-                // divide by the resolution multiplier
-                spv::Id res_multiplier = utils::create_access_chain(b, spv::StorageClassUniform, translation_state.render_info_id, { b.makeIntConstant(FRAG_UNIFORM_res_multiplier) });
-                res_multiplier = b.createLoad(res_multiplier, spv::NoPrecision);
-                // don't change the z and w coords
-                spv::Id one = b.makeFloatConstant(1.0f);
-                res_multiplier = b.createCompositeConstruct(v4, { res_multiplier, res_multiplier, one, one });
+    spv::Id res_multiplier = utils::create_access_chain(b, spv::StorageClassUniform, translation_state.render_info_id, { b.makeIntConstant(FRAG_UNIFORM_res_multiplier) });
+    res_multiplier = b.createLoad(res_multiplier, spv::NoPrecision);
+    spv::Id one = b.makeFloatConstant(1.0f);
+    res_multiplier = b.createCompositeConstruct(v4, { res_multiplier, res_multiplier, one, one });
+    pa_iter_var = b.createBinOp(spv::OpFDiv, v4, pa_iter_var, res_multiplier);
+} else {
+    spv::Decoration precision = get_data_type_size(pa_dtype) < 4
+        ? spv::DecorationRelaxedPrecision : spv::NoPrecision;
 
-                pa_iter_var = b.createBinOp(spv::OpFDiv, v4, pa_iter_var, res_multiplier);
-            } else {
-                spv::Decoration precision = get_data_type_size(pa_dtype) < 4 ? spv::DecorationRelaxedPrecision : spv::NoPrecision;
-                pa_iter_var = b.createVariable(precision, spv::StorageClassInput, pa_iter_type, pa_name.c_str());
-                b.addDecoration(pa_iter_var, spv::DecorationLocation, pa_loc);
-
-                translation_state.interfaces.push_back(pa_iter_var);
+    // --- PowerVR fix: skip duplicate location declaration only ---
+    if (!declared_pa_locations.count(pa_loc)) {
+        declared_pa_locations.insert(pa_loc);
+        pa_iter_var = b.createVariable(precision, spv::StorageClassInput,
+            pa_iter_type, pa_name.c_str());
+        b.addDecoration(pa_iter_var, spv::DecorationLocation, pa_loc);
+        translation_state.interfaces.push_back(pa_iter_var);
+    } else {
+        // reuse the existing variable — find it by location
+        for (auto &vtr : translation_state.var_to_regs) {
+            if (vtr.pa && vtr.offset == pa_offset) {
+                pa_iter_var = vtr.var;
+                break;
             }
+        }
+    }
+    // -----------------------------------------------------------
+}
 
-            translation_state.var_to_regs.push_back(
-                { pa_iter_var,
-                    true,
-                    pa_offset,
-                    pa_iter_size,
-                    pa_dtype,
-                    false });
+// var_to_regs.push_back still runs normally for both paths
+translation_state.var_to_regs.push_back(
+    { pa_iter_var,
+        true,
+        pa_offset,
+        pa_iter_size,
+        pa_dtype,
+        false });
             LOG_DEBUG("Iterator: pa{} = ({}{}) {}", pa_offset, pa_type, num_comp, pa_name);
 
             bool do_coord = false;
