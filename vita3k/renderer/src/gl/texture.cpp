@@ -185,7 +185,12 @@ void GLTextureCache::upload_texture_impl(SceGxmTextureBaseFormat base_format, ui
         // GXM's cube map index is same as OpenGL: right, left, top, bottom, front, back
         upload_type = GL_TEXTURE_CUBE_MAP_POSITIVE_X + (face - 1);
 
-    if (gxm::is_bcn_format(base_format) || renderer::texture::is_astc_format(base_format)) {
+    if (gxm::is_pvrt_format(base_format)) {
+        const GLenum fmt = translate_internal_format(base_format);
+        size_t compressed_size = renderer::texture::get_compressed_size(base_format, width, height);
+        glCompressedTexSubImage2D(upload_type, mip_index, 0, 0, width, height,
+                                  fmt, static_cast<GLsizei>(compressed_size), pixels);
+    } else if (gxm::is_bcn_format(base_format) || renderer::texture::is_astc_format(base_format)) { {
         glPixelStorei(GL_UNPACK_ROW_LENGTH, static_cast<GLint>(pixels_per_stride));
 
         if (gxm::is_bcn_format(base_format)) {
@@ -249,7 +254,7 @@ void GLTextureCache::import_configure_impl(SceGxmTextureBaseFormat base_format, 
 
     apply_sampler_state(gxm_texture, texture_bind_type, anisotropic_filtering);
 
-    bool compressed = gxm::is_bcn_format(base_format) || renderer::texture::is_astc_format(base_format);
+    bool compressed = gxm::is_bcn_format(base_format) || renderer::texture::is_astc_format(base_format) || gxm::is_pvrt_format(base_format);
     const GLenum internal_format = translate_internal_format(base_format);
     const GLenum format = translate_format(base_format);
     const GLenum type = compressed ? 0 : translate_type(base_format);
