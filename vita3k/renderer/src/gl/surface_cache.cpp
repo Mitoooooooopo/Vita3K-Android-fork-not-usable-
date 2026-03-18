@@ -87,7 +87,13 @@ GLuint GLSurfaceCache::retrieve_color_surface_texture_handle(const State &state,
     GLenum surface_internal_format = color::translate_internal_format(base_format);
     GLenum surface_upload_format = color::translate_format(base_format);
     GLenum surface_data_type = color::translate_type(base_format);
-
+    
+    if ((static_cast<uint32_t>(base_format) & 0xFF000000) == 0x85000000) {
+    surface_internal_format = GL_RGBA8;
+    surface_upload_format = GL_RGBA;
+    surface_data_type = GL_UNSIGNED_BYTE;
+    }
+    
     std::size_t bytes_per_stride = pixel_stride * color::bytes_per_pixel(base_format);
     std::size_t total_surface_size = bytes_per_stride * original_height;
 
@@ -501,7 +507,13 @@ GLuint GLSurfaceCache::retrieve_ping_pong_color_surface_texture_handle(Ptr<void>
     GLenum surface_internal_format = color::translate_internal_format(info.format);
     GLenum surface_upload_format = color::translate_format(info.format);
     GLenum surface_data_type = color::translate_type(info.format);
-
+    
+    if ((static_cast<uint32_t>(base_format) & 0xFF000000) == 0x85000000) {
+    surface_internal_format = GL_RGBA8;
+    surface_upload_format = GL_RGBA;
+    surface_data_type = GL_UNSIGNED_BYTE;
+    }
+    
     if (!info.gl_ping_pong_texture[0]) {
         if (!info.gl_ping_pong_texture.init(glGenTextures, glDeleteTextures)) {
             LOG_ERROR("Failed to initialise ping pong surface texture!");
