@@ -508,7 +508,7 @@ GLuint GLSurfaceCache::retrieve_ping_pong_color_surface_texture_handle(Ptr<void>
     GLenum surface_upload_format = color::translate_format(info.format);
     GLenum surface_data_type = color::translate_type(info.format);
     
-    if ((static_cast<uint32_t>(base_format) & 0xFF000000) == 0x85000000) {
+    if ((static_cast<uint32_t>(info.format) & 0xFF000000) == 0x85000000) {
     surface_internal_format = GL_RGBA8;
     surface_upload_format = GL_RGBA;
     surface_data_type = GL_UNSIGNED_BYTE;
